@@ -55,58 +55,84 @@
   <script>
     const GITHUB_USERNAME = "11nawid";
     const REPO_NAME = "FreeBGs";
-    const BASE_FOLDER = "media";
-    const API_URL = `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/${BASE_FOLDER}`;
-    const RAW_URL = `https://${GITHUB_USERNAME}.github.io/${REPO_NAME}/${BASE_FOLDER}/`;
+    const BASE_PATH = "media";
+    const API_ROOT = `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/`;
+    const PUBLIC_URL = `https://${GITHUB_USERNAME}.github.io/${REPO_NAME}/`;
 
     const IMAGE_EXTS = ['.jpg', '.jpeg', '.png', '.webp'];
     const GIF_EXTS = ['.gif'];
     const VIDEO_EXTS = ['.mp4', '.webm', '.mov'];
 
+    const mediaContainer = document.getElementById("media");
+
+    async function fetchFilesRecursively(path = BASE_PATH) {
+      const res = await fetch(`${API_ROOT}${path}`);
+      const data = await res.json();
+      if (!Array.isArray(data)) return [];
+
+      let allFiles = [];
+
+      for (const item of data) {
+        if (item.type === "file") {
+          allFiles.push(item.path);
+        } else if (item.type === "dir") {
+          const nested = await fetchFilesRecursively(item.path);
+          allFiles = allFiles.concat(nested);
+        }
+      }
+
+      return allFiles;
+    }
+
+    function getFileType(fileName) {
+      const name = fileName.toLowerCase();
+      if (VIDEO_EXTS.some(ext => name.endsWith(ext))) return "video";
+      if (GIF_EXTS.some(ext => name.endsWith(ext))) return "gif";
+      if (IMAGE_EXTS.some(ext => name.endsWith(ext))) return "image";
+      return "unknown";
+    }
+
+    function createMediaCard(filePath) {
+      const fileName = filePath.split("/").pop();
+      const fileURL = `${PUBLIC_URL}${filePath}`;
+      const type = getFileType(fileName);
+
+      if (type === "unknown") return "";
+
+      let mediaHTML = "";
+      if (type === "video") {
+        mediaHTML = `<video src="${fileURL}" controls loop muted playsinline class="w-full h-full object-contain"></video>`;
+      } else {
+        mediaHTML = `<img src="${fileURL}" alt="${fileName}" loading="lazy" class="w-full h-full object-contain">`;
+      }
+
+      return `
+        <div class="bg-gray-800 rounded-lg shadow p-4">
+          <div class="media-preview">${mediaHTML}</div>
+          <h3 class="text-lg font-semibold mt-3 filename">${fileName}</h3>
+          <input class="w-full text-sm bg-gray-700 text-gray-200 px-3 py-1 rounded border border-gray-600 url-input mt-2" value="${fileURL}" readonly onclick="this.select()">
+          <button onclick="copyURL(this)" class="mt-2 w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-1 rounded text-sm">📋 Copy URL</button>
+        </div>
+      `;
+    }
+
     async function loadMedia() {
-      const container = document.getElementById("media");
-      container.innerHTML = "<div class='loader'></div>";
+      mediaContainer.innerHTML = "<div class='loader'></div>";
 
       try {
-        const res = await fetch(API_URL);
-        const files = await res.json();
-        if (!Array.isArray(files)) throw new Error("Invalid response");
+        const allFiles = await fetchFilesRecursively();
 
-        const mediaFiles = files.filter(file => file.type === "file");
+        const cards = allFiles
+          .map(path => createMediaCard(path))
+          .filter(html => html.trim() !== "");
 
-        container.innerHTML = "";
-
-        mediaFiles.forEach(file => {
-          const url = `${RAW_URL}${file.name}`;
-          const name = file.name.toLowerCase();
-
-          let type = "unknown";
-          if (VIDEO_EXTS.some(ext => name.endsWith(ext))) type = "video";
-          else if (GIF_EXTS.some(ext => name.endsWith(ext))) type = "gif";
-          else if (IMAGE_EXTS.some(ext => name.endsWith(ext))) type = "image";
-
-          const div = document.createElement("div");
-          div.className = "bg-gray-800 rounded-lg shadow p-4";
-
-          let mediaHTML = "";
-          if (type === "video") {
-            mediaHTML = `<div class="media-preview"><video src="${url}" controls loop muted playsinline></video></div>`;
-          } else if (type === "image" || type === "gif") {
-            mediaHTML = `<div class="media-preview"><img src="${url}" alt="${file.name}" loading="lazy"></div>`;
-          } else {
-            return; // skip unknown
-          }
-
-          div.innerHTML = `
-            ${mediaHTML}
-            <h3 class="text-lg font-semibold mt-3 filename">${file.name}</h3>
-            <input class="w-full text-sm bg-gray-700 text-gray-200 px-3 py-1 rounded border border-gray-600 url-input mt-2" value="${url}" readonly onclick="this.select()">
-            <button onclick="copyURL(this)" class="mt-2 w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-1 rounded text-sm">📋 Copy URL</button>
-          `;
-          container.appendChild(div);
-        });
+        if (cards.length === 0) {
+          mediaContainer.innerHTML = `<p class="text-center text-yellow-400">No media files found.</p>`;
+        } else {
+          mediaContainer.innerHTML = cards.join("");
+        }
       } catch (err) {
-        container.innerHTML = `<p class="text-center text-red-500">Failed to load media.</p>`;
+        mediaContainer.innerHTML = `<p class="text-center text-red-500">Failed to load media.</p>`;
         console.error("Error fetching media:", err);
       }
     }
@@ -116,7 +142,7 @@
       input.select();
       document.execCommand("copy");
       button.innerText = "✅ Copied!";
-      setTimeout(() => button.innerText = "📋 Copy URL", 1500);
+      setTimeout(() => (button.innerText = "📋 Copy URL"), 1500);
     }
 
     document.addEventListener("DOMContentLoaded", loadMedia);
