@@ -18,11 +18,13 @@
       margin: auto;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
+
     .media-container {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
       gap: 1.5rem;
     }
+
     .media-preview {
       height: 200px;
       background-color: #2d3748;
@@ -31,14 +33,22 @@
       justify-content: center;
       overflow: hidden;
     }
+
     .media-preview img,
     .media-preview video {
       max-width: 100%;
       max-height: 100%;
       object-fit: contain;
     }
-    .filename {
+
+    .filename, .url-input {
       word-break: break-word;
+      overflow-wrap: break-word;
+    }
+
+    .url-input {
+      white-space: nowrap;
+      overflow-x: auto;
     }
   </style>
 </head>
@@ -88,7 +98,6 @@
           div.className = "bg-gray-800 rounded-lg shadow p-4 media-item";
 
           let mediaHTML = "";
-
           if (type === "video") {
             mediaHTML = `
               <div class="media-preview">
@@ -102,23 +111,22 @@
               </div>
             `;
           } else {
-            return; // skip unknown types
+            return; // skip unknown
           }
 
           div.innerHTML = `
             ${mediaHTML}
             <h3 class="text-lg font-semibold mt-3 filename">${file.name}</h3>
             <div class="mt-2">
-              <input class="w-full text-sm bg-gray-700 text-gray-200 px-3 py-1 rounded border border-gray-600 focus:outline-none" 
+              <input class="w-full text-sm bg-gray-700 text-gray-200 px-3 py-1 rounded border border-gray-600 focus:outline-none url-input" 
                      value="${url}" 
-                     readonly>
+                     readonly onclick="this.select()">
               <button onclick="copyURL(this)" 
                       class="mt-2 w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-1 rounded text-sm">
                 📋 Copy URL
               </button>
             </div>
           `;
-
           container.appendChild(div);
         });
       } catch (error) {
