@@ -1,1 +1,123 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>FreeBGs - Media Folder</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .loader {
+      border: 4px solid #ccc;
+      border-top: 4px solid #3490dc;
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      animation: spin 1s linear infinite;
+      margin: auto;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .media-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+    .media-preview {
+      height: 200px;
+      background-color: #2d3748;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .media-preview img,
+    .media-preview video {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+    .filename, .url-input {
+      word-break: break-word;
+    }
+    .url-input {
+      white-space: nowrap;
+      overflow-x: auto;
+    }
+  </style>
+</head>
+<body class="bg-gray-900 text-white min-h-screen py-10 px-4 sm:px-8">
+  <div class="max-w-6xl mx-auto">
+    <h1 class="text-3xl font-bold mb-6 text-center">🎬 FreeBGs - media/ Only</h1>
+    <div id="media" class="media-container"><div class="loader"></div></div>
+  </div>
+
+  <script>
+    const GITHUB_USERNAME = "11nawid";
+    const REPO_NAME = "FreeBGs";
+    const MEDIA_FOLDER = "media";
+    const GITHUB_API = `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/${MEDIA_FOLDER}`;
+    const PUBLIC_URL = `https://${GITHUB_USERNAME}.github.io/${REPO_NAME}/${MEDIA_FOLDER}/`;
+
+    const VALID_MEDIA = [".jpg", ".jpeg", ".png", ".webp", ".gif", ".mp4", ".webm", ".mov"];
+
+    function getType(file) {
+      const lower = file.toLowerCase();
+      if (lower.endsWith(".mp4") || lower.endsWith(".webm") || lower.endsWith(".mov")) return "video";
+      if (lower.endsWith(".gif")) return "gif";
+      if (lower.endsWith(".jpg") || lower.endsWith(".jpeg") || lower.endsWith(".png") || lower.endsWith(".webp")) return "image";
+      return "unknown";
+    }
+
+    function createCard(file) {
+      const fileURL = PUBLIC_URL + file.name;
+      const type = getType(file.name);
+      if (type === "unknown") return "";
+
+      const preview = type === "video"
+        ? `<video src="${fileURL}" controls loop muted playsinline></video>`
+        : `<img src="${fileURL}" alt="${file.name}" loading="lazy">`;
+
+      return `
+        <div class="bg-gray-800 rounded-lg shadow p-4">
+          <div class="media-preview">${preview}</div>
+          <h3 class="text-lg font-semibold mt-3 filename">${file.name}</h3>
+          <input class="w-full text-sm bg-gray-700 text-gray-200 px-3 py-1 rounded border border-gray-600 url-input mt-2" value="${fileURL}" readonly onclick="this.select()">
+          <button onclick="copyURL(this)" class="mt-2 w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-1 rounded text-sm">📋 Copy URL</button>
+        </div>
+      `;
+    }
+
+    async function loadMedia() {
+      const container = document.getElementById("media");
+      container.innerHTML = "<div class='loader'></div>";
+
+      try {
+        const res = await fetch(GITHUB_API);
+        const files = await res.json();
+        const mediaFiles = files.filter(file => file.type === "file" && VALID_MEDIA.some(ext => file.name.toLowerCase().endsWith(ext)));
+
+        if (mediaFiles.length === 0) {
+          container.innerHTML = `<p class="text-center text-yellow-400">No media files found in media/</p>`;
+          return;
+        }
+
+        container.innerHTML = mediaFiles.map(createCard).join("");
+      } catch (err) {
+        container.innerHTML = `<p class="text-center text-red-500">Failed to load media.</p>`;
+        console.error(err);
+      }
+    }
+
+    function copyURL(button) {
+      const input = button.previousElementSibling;
+      input.select();
+      document.execCommand("copy");
+      button.innerText = "✅ Copied!";
+      setTimeout(() => (button.innerText = "📋 Copy URL"), 1500);
+    }
+
+    document.addEventListener("DOMContentLoaded", loadMedia);
+  </script>
+</body>
+</html>
+
