@@ -18,11 +18,10 @@
       width: 36px;
       height: 36px;
       animation: spin 1s linear infinite;
+      margin: auto;
     }
     @keyframes spin {
-      to {
-        transform: rotate(360deg);
-      }
+      to { transform: rotate(360deg); }
     }
     .media-container {
       display: grid;
@@ -44,7 +43,7 @@
       object-fit: contain;
     }
     .filename {
-      word-break: break-all;
+      word-break: break-word;
     }
   </style>
 </head>
@@ -72,47 +71,32 @@
     const GITHUB_USERNAME = "11nawid";
     const REPO_NAME = "FreeBGs";
     const BASE_FOLDER = "media";
-
-    // Hardcoded file lists based on your screenshot
-    const mediaFiles = {
-      videos: [
-        "185751-876533030_small.mp4",
-        "211275_small.mp4",
-        "214500_small.mp4",
-        "b.mp4",
-        "coffee-shop.1920x1080.mp4",
-        "retro-city.1920x1080.mp4"
-      ],
-      gifs: [
-        "echo416c16b66e9e5409def92..."
-      ],
-      images: [
-        "attack-on-titan-eren-mikasa-l...",
-        "beautiful-anime-landscape-car...",
-        "danboard-1808477_1280.jpg",
-        "digital-art-isolated-house.jpg",
-        "eren-and-mikasa-romantic-m...",
-        "girl-1906187_1280.jpg",
-        "girl-1906304_1920.jpg",
-        "profile.jpg",
-        "samurai-sunset.jpg"
-      ]
-    };
-
-    // Using GitHub Pages URL directly
+    const GITHUB_API_BASE = `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/${BASE_FOLDER}`;
     const GITHUB_PAGES_BASE = `https://${GITHUB_USERNAME}.github.io/${REPO_NAME}/${BASE_FOLDER}/`;
 
     async function loadMedia() {
-      for (const [type, files] of Object.entries(mediaFiles)) {
-        const container = document.getElementById(type);
-        container.innerHTML = "";
-        
-        if (files.length === 0) {
-          container.innerHTML = `<p class='text-center text-yellow-400'>No ${type} found.</p>`;
-          continue;
-        }
+      const types = ["videos", "gifs", "images"];
 
-        renderMedia(type, files, type.slice(0, -1));
+      for (const type of types) {
+        const container = document.getElementById(type);
+        container.innerHTML = "<div class='loader'></div>";
+
+        try {
+          const res = await fetch(`${GITHUB_API_BASE}/${type}`);
+          const files = await res.json();
+
+          if (!Array.isArray(files)) throw new Error("Invalid response");
+
+          const fileNames = files
+            .map(file => file.name)
+            .filter(name => !name.startsWith('.') && !name.endsWith('.md'));
+
+          container.innerHTML = "";
+          renderMedia(type, fileNames, type.slice(0, -1));
+        } catch (error) {
+          container.innerHTML = `<p class='text-center text-red-400'>Failed to load ${type}.</p>`;
+          console.error(`Error loading ${type}:`, error);
+        }
       }
     }
 
@@ -189,7 +173,6 @@
       });
     }
 
-    // Initialize
     document.addEventListener('DOMContentLoaded', loadMedia);
   </script>
 </body>
