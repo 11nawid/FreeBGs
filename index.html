@@ -2,9 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>FreeBGs - Aesthetic Backgrounds</title>
+  <title>FreeBGs - All Media</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Free video, gif, and image backgrounds for developers. Just copy & use!">
   <link rel="icon" href="https://11nawid.github.io/FreeBGs/favicon.png">
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
@@ -18,13 +17,11 @@
       margin: auto;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
-
     .media-container {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
       gap: 1.5rem;
     }
-
     .media-preview {
       height: 200px;
       background-color: #2d3748;
@@ -33,19 +30,16 @@
       justify-content: center;
       overflow: hidden;
     }
-
     .media-preview img,
     .media-preview video {
       max-width: 100%;
       max-height: 100%;
       object-fit: contain;
     }
-
     .filename, .url-input {
       word-break: break-word;
       overflow-wrap: break-word;
     }
-
     .url-input {
       white-space: nowrap;
       overflow-x: auto;
@@ -54,10 +48,7 @@
 </head>
 <body class="bg-gray-900 text-white min-h-screen py-10 px-4 sm:px-8">
   <div class="max-w-6xl mx-auto">
-    <h1 class="text-3xl font-bold mb-4 text-center">🎬 FreeBGs</h1>
-
-    <input id="searchInput" placeholder="Search media by name..." class="mb-6 px-4 py-2 w-full rounded bg-gray-800 border border-gray-600 text-white" oninput="filterMedia()">
-
+    <h1 class="text-3xl font-bold mb-6 text-center">🎬 FreeBGs - All Media</h1>
     <div id="media" class="media-container"><div class="loader"></div></div>
   </div>
 
@@ -65,8 +56,8 @@
     const GITHUB_USERNAME = "11nawid";
     const REPO_NAME = "FreeBGs";
     const BASE_FOLDER = "media";
-    const GITHUB_API = `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/${BASE_FOLDER}`;
-    const GITHUB_PAGES_BASE = `https://${GITHUB_USERNAME}.github.io/${REPO_NAME}/${BASE_FOLDER}/`;
+    const API_URL = `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/${BASE_FOLDER}`;
+    const RAW_URL = `https://${GITHUB_USERNAME}.github.io/${REPO_NAME}/${BASE_FOLDER}/`;
 
     const IMAGE_EXTS = ['.jpg', '.jpeg', '.png', '.webp'];
     const GIF_EXTS = ['.gif'];
@@ -77,7 +68,7 @@
       container.innerHTML = "<div class='loader'></div>";
 
       try {
-        const res = await fetch(GITHUB_API);
+        const res = await fetch(API_URL);
         const files = await res.json();
         if (!Array.isArray(files)) throw new Error("Invalid response");
 
@@ -86,7 +77,7 @@
         container.innerHTML = "";
 
         mediaFiles.forEach(file => {
-          const url = `${GITHUB_PAGES_BASE}${file.name}`;
+          const url = `${RAW_URL}${file.name}`;
           const name = file.name.toLowerCase();
 
           let type = "unknown";
@@ -95,21 +86,13 @@
           else if (IMAGE_EXTS.some(ext => name.endsWith(ext))) type = "image";
 
           const div = document.createElement("div");
-          div.className = "bg-gray-800 rounded-lg shadow p-4 media-item";
+          div.className = "bg-gray-800 rounded-lg shadow p-4";
 
           let mediaHTML = "";
           if (type === "video") {
-            mediaHTML = `
-              <div class="media-preview">
-                <video class="w-full h-full object-contain" src="${url}" controls loop muted playsinline></video>
-              </div>
-            `;
+            mediaHTML = `<div class="media-preview"><video src="${url}" controls loop muted playsinline></video></div>`;
           } else if (type === "image" || type === "gif") {
-            mediaHTML = `
-              <div class="media-preview">
-                <img class="w-full h-full object-contain" src="${url}" alt="${file.name}" loading="lazy">
-              </div>
-            `;
+            mediaHTML = `<div class="media-preview"><img src="${url}" alt="${file.name}" loading="lazy"></div>`;
           } else {
             return; // skip unknown
           }
@@ -117,21 +100,14 @@
           div.innerHTML = `
             ${mediaHTML}
             <h3 class="text-lg font-semibold mt-3 filename">${file.name}</h3>
-            <div class="mt-2">
-              <input class="w-full text-sm bg-gray-700 text-gray-200 px-3 py-1 rounded border border-gray-600 focus:outline-none url-input" 
-                     value="${url}" 
-                     readonly onclick="this.select()">
-              <button onclick="copyURL(this)" 
-                      class="mt-2 w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-1 rounded text-sm">
-                📋 Copy URL
-              </button>
-            </div>
+            <input class="w-full text-sm bg-gray-700 text-gray-200 px-3 py-1 rounded border border-gray-600 url-input mt-2" value="${url}" readonly onclick="this.select()">
+            <button onclick="copyURL(this)" class="mt-2 w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-1 rounded text-sm">📋 Copy URL</button>
           `;
           container.appendChild(div);
         });
-      } catch (error) {
-        container.innerHTML = `<p class='text-center text-red-400'>Failed to load media.</p>`;
-        console.error("Error loading media:", error);
+      } catch (err) {
+        container.innerHTML = `<p class="text-center text-red-500">Failed to load media.</p>`;
+        console.error("Error fetching media:", err);
       }
     }
 
@@ -140,15 +116,7 @@
       input.select();
       document.execCommand("copy");
       button.innerText = "✅ Copied!";
-      setTimeout(() => (button.innerText = "📋 Copy URL"), 1500);
-    }
-
-    function filterMedia() {
-      const term = document.getElementById("searchInput").value.toLowerCase();
-      document.querySelectorAll('.media-item').forEach(div => {
-        const name = div.querySelector('h3').textContent.toLowerCase();
-        div.style.display = name.includes(term) ? 'block' : 'none';
-      });
+      setTimeout(() => button.innerText = "📋 Copy URL", 1500);
     }
 
     document.addEventListener("DOMContentLoaded", loadMedia);
