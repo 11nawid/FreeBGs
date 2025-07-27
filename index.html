@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>FreeBGs - Aesthetic Backgrounds</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Free video, gif, and image backgrounds for developers. Just copy & use!">
+  <meta property="og:title" content="FreeBGs - Aesthetic Backgrounds">
+  <meta property="og:description" content="Free videos, gifs, and images for developers. Copy and use instantly.">
+  <meta property="og:image" content="https://11nawid.github.io/FreeBGs/preview.jpg">
+  <link rel="icon" href="https://11nawid.github.io/FreeBGs/favicon.png">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .loader {
+      border: 4px solid #ccc;
+      border-top: 4px solid #3490dc;
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+    .media-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+    .media-preview {
+      height: 200px;
+      background-color: #2d3748;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .media-preview img,
+    .media-preview video {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+    .filename {
+      word-break: break-all;
+    }
+  </style>
+</head>
+<body class="bg-gray-900 text-white min-h-screen py-10 px-4 sm:px-8">
+  <div class="max-w-6xl mx-auto">
+    <h1 class="text-3xl font-bold mb-4 text-center">🎬 FreeBGs</h1>
+
+    <!-- Tabs -->
+    <div class="flex justify-center mb-6 space-x-4">
+      <button onclick="switchTab('videos')" class="tab-btn px-4 py-2 rounded bg-blue-700" id="tab-videos">Videos</button>
+      <button onclick="switchTab('gifs')" class="tab-btn px-4 py-2 rounded bg-gray-700 hover:bg-gray-800" id="tab-gifs">GIFs</button>
+      <button onclick="switchTab('images')" class="tab-btn px-4 py-2 rounded bg-gray-700 hover:bg-gray-800" id="tab-images">Images</button>
+    </div>
+
+    <!-- Search -->
+    <input id="searchInput" placeholder="Search media by name..." class="mb-6 px-4 py-2 w-full rounded bg-gray-800 border border-gray-600 text-white" oninput="filterMedia()">
+
+    <!-- Media Sections -->
+    <div id="videos" class="tab-content media-container"><div class="loader"></div></div>
+    <div id="gifs" class="tab-content media-container hidden"><div class="loader"></div></div>
+    <div id="images" class="tab-content media-container hidden"><div class="loader"></div></div>
+  </div>
+
+  <script>
+    const GITHUB_USERNAME = "11nawid";
+    const REPO_NAME = "FreeBGs";
+    const BASE_FOLDER = "media";
+
+    // Hardcoded file lists based on your screenshot
+    const mediaFiles = {
+      videos: [
+        "185751-876533030_small.mp4",
+        "211275_small.mp4",
+        "214500_small.mp4",
+        "b.mp4",
+        "coffee-shop.1920x1080.mp4",
+        "retro-city.1920x1080.mp4"
+      ],
+      gifs: [
+        "echo416c16b66e9e5409def92..."
+      ],
+      images: [
+        "attack-on-titan-eren-mikasa-l...",
+        "beautiful-anime-landscape-car...",
+        "danboard-1808477_1280.jpg",
+        "digital-art-isolated-house.jpg",
+        "eren-and-mikasa-romantic-m...",
+        "girl-1906187_1280.jpg",
+        "girl-1906304_1920.jpg",
+        "profile.jpg",
+        "samurai-sunset.jpg"
+      ]
+    };
+
+    // Using GitHub Pages URL directly
+    const GITHUB_PAGES_BASE = `https://${GITHUB_USERNAME}.github.io/${REPO_NAME}/${BASE_FOLDER}/`;
+
+    async function loadMedia() {
+      for (const [type, files] of Object.entries(mediaFiles)) {
+        const container = document.getElementById(type);
+        container.innerHTML = "";
+        
+        if (files.length === 0) {
+          container.innerHTML = `<p class='text-center text-yellow-400'>No ${type} found.</p>`;
+          continue;
+        }
+
+        renderMedia(type, files, type.slice(0, -1));
+      }
+    }
+
+    function renderMedia(sectionId, files, type) {
+      const container = document.getElementById(sectionId);
+
+      files.forEach(file => {
+        const fileURL = `${GITHUB_PAGES_BASE}${sectionId}/${file}`;
+        const div = document.createElement("div");
+        div.className = "bg-gray-800 rounded-lg shadow p-4 media-item";
+
+        let mediaHTML = "";
+        if (type === "video") {
+          mediaHTML = `
+            <div class="media-preview">
+              <video class="w-full h-full object-contain" 
+                     src="${fileURL}" 
+                     controls loop muted playsinline>
+                Your browser does not support HTML5 video.
+              </video>
+            </div>
+          `;
+        } else {
+          mediaHTML = `
+            <div class="media-preview">
+              <img class="w-full h-full object-contain" 
+                   src="${fileURL}" 
+                   alt="${file}" 
+                   loading="lazy">
+            </div>
+          `;
+        }
+
+        div.innerHTML = `
+          ${mediaHTML}
+          <h3 class="text-lg font-semibold mt-3 filename">${file}</h3>
+          <div class="mt-2">
+            <input class="w-full text-sm bg-gray-700 text-gray-200 px-3 py-1 rounded border border-gray-600 focus:outline-none" 
+                   value="${fileURL}" 
+                   readonly>
+            <button onclick="copyURL(this)" 
+                    class="mt-2 w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-1 rounded text-sm">
+              📋 Copy URL
+            </button>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function copyURL(button) {
+      const input = button.previousElementSibling;
+      input.select();
+      document.execCommand("copy");
+      button.innerText = "✅ Copied!";
+      setTimeout(() => (button.innerText = "📋 Copy URL"), 1500);
+    }
+
+    function switchTab(tabId) {
+      document.querySelectorAll(".tab-content").forEach(tab => tab.classList.add("hidden"));
+      document.getElementById(tabId).classList.remove("hidden");
+
+      document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.remove("bg-blue-700"));
+      document.getElementById(`tab-${tabId}`).classList.add("bg-blue-700");
+
+      filterMedia();
+    }
+
+    function filterMedia() {
+      const term = document.getElementById("searchInput").value.toLowerCase();
+      document.querySelectorAll('.tab-content:not(.hidden) .media-item').forEach(div => {
+        const name = div.querySelector('h3').textContent.toLowerCase();
+        div.style.display = name.includes(term) ? 'block' : 'none';
+      });
+    }
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', loadMedia);
+  </script>
+</body>
+</html>
