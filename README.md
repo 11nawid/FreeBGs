@@ -1,68 +1,74 @@
-# FreeBGs
+# 🌌 FreeBGs 
 
-A curated collection of **free-to-use aesthetic videos, GIFs, and images** for developers, designers, and creators. Just copy the link and paste it directly into your website or project — no attribution required.
+*A curated collection of free-to-use aesthetic videos, GIFs, and images for developers, designers, and creators.*  
 
-🚀 [Live Preview on GitHub Pages](https://11nawid.github.io/FreeBGs/)
-
----
-
-## 📁 Folder Structure
-
-FreeBGs/
-├── index.html
-├── media/
-│ ├── videos/ → .mp4, .webm, .ogg files
-│ ├── gifs/ → .gif files
-│ └── images/ → .jpg, .png, .webp files
-
-All media files are stored inside the `media/` folder and loaded dynamically by the frontend.
+[![GitHub Pages](https://img.shields.io/badge/🚀_Live_Preview-GitHub_Pages-blue?style=flat-square)](https://11nawid.github.io/FreeBGs/)
+[![License](https://img.shields.io/badge/📄_License-Public_Domain-green?style=flat-square)](#license)
+[![Contributions Welcome](https://img.shields.io/badge/✨_Contributions-Welcome-brightgreen?style=flat-square)](#contributing)
 
 ---
 
-## 🔍 Features
-
-- 🎥 Live preview of all media files (videos, gifs, images)
-- 📋 One-click **copy-to-clipboard** media URLs
-- 🔍 Search bar to filter media by filename
-- 🧪 Tabbed layout (Videos, GIFs, Images)
-- 🌓 Clean dark UI using Tailwind CSS
-- ⚡ No backend — fully static and lightweight
+## 🎥 Preview
+![FreeBGs Preview](https://via.placeholder.com/800x450?text=FreeBGs+Demo+Preview)  
+*Replace with actual screenshot of your project*
 
 ---
 
-## ✅ How to Use
+## 📦 Features
 
-1. **Browse:** Go to [FreeBGs GitHub Page](https://11nawid.github.io/FreeBGs/)
-2. **Preview:** Use tabs to preview videos, gifs, or images
-3. **Copy URL:** Click the “📋 Copy URL” button
-4. **Use it:** Paste the link in your HTML/CSS:
+| Feature          | Description                                                                 |
+|------------------|-----------------------------------------------------------------------------|
+| 🎥 **Media Preview**   | Live previews for videos, GIFs, and images                                  |
+| 📋 **One-Click Copy**  | Instantly copy media URLs to clipboard                                      |
+| 🔍 **Smart Search**    | Filter media by filename or type                                            |
+| 🏷️ **Tabbed Layout**   | Organized browsing (Videos/GIFs/Images)                                     |
+| 🎨 **Dark UI**         | Clean, eye-friendly interface with Tailwind CSS                             |
+| ⚡ **Zero Backend**    | Fully static site — fast loading, no dependencies                           |
 
+---
+
+## 🛠️ How to Use
+
+### For Developers:
 ```html
-<!-- Video Background Example -->
-<video autoplay muted loop>
-  <source src="https://11nawid.github.io/FreeBGs/media/videos/yourfile.mp4" type="video/mp4">
+<!-- Video Background -->
+<video autoplay muted loop class="fixed w-full h-full object-cover z-0">
+  <source src="https://11nawid.github.io/FreeBGs/media/videos/cosmic.mp4" type="video/mp4">
 </video>
 
-<!-- CSS Background Example -->
-body {
-  background-image: url('https://11nawid.github.io/FreeBGs/media/images/bg1.jpg');
-}
+<!-- CSS Background -->
+<style>
+  .hero-section {
+    background: url('https://11nawid.github.io/FreeBGs/media/images/abstract-wave.jpg') center/cover;
+  }
+</style>
+```
+
+### For Designers:
+1. Visit [Live Preview](https://11nawid.github.io/FreeBGs/)
+2. Browse media using tabs
+3. Click "📋 Copy URL" on any asset
+4. Paste into Figma/Photoshop or download directly
 
 ---
 
+## 📂 Project Structure
+```bash
+FreeBGs/
+├── index.html            # Main page
+├── scripts/              # JavaScript functionality
+│   └── main.js           # Dynamic media loader + clipboard logic
+├── media/                # All assets
+│   ├── videos/           # .mp4/.webm/.ogg
+│   ├── gifs/             # .gif
+│   └── images/           # .jpg/.png/.webp
+└── styles/               # Tailwind CSS
+```
 
-✨ Contributing
-Want to add more aesthetic files?
 
-Fork the repository
+## 📜 License
+All content is released under [Creative Commons Zero (CC0)](https://creativecommons.org/publicdomain/zero/1.0/) unless otherwise specified in file metadata. This means you can use, modify, and distribute the assets freely for any purpose.
 
-Add your media to the correct folder (media/videos, media/gifs, media/images)
+---
 
-Commit and open a pull request
-
-📄 License
-All content provided here is public domain or contributed under free-to-use licenses. No attribution is required unless stated otherwise in the media.
-
-
-
-Let me know if you'd like a version with markdown preview formatting for GitHub or if you need a downloadable `.md` file later!
+*Made with ♥ by [@11nawid](https://github.com/11nawid) • [Report an Issue](https://github.com/11nawid/FreeBGs/issues)*
