@@ -8,9 +8,6 @@
 
 ---
 
-## 🎥 Preview
-![FreeBGs Preview](https://via.placeholder.com/800x450?text=FreeBGs+Demo+Preview)  
-*Replace with actual screenshot of your project*
 
 ---
 
@@ -18,12 +15,11 @@
 
 | Feature          | Description                                                                 |
 |------------------|-----------------------------------------------------------------------------|
-| 🎥 **Media Preview**   | Live previews for videos, GIFs, and images                                  |
-| 📋 **One-Click Copy**  | Instantly copy media URLs to clipboard                                      |
-| 🔍 **Smart Search**    | Filter media by filename or type                                            |
-| 🏷️ **Tabbed Layout**   | Organized browsing (Videos/GIFs/Images)                                     |
-| 🎨 **Dark UI**         | Clean, eye-friendly interface with Tailwind CSS                             |
-| ⚡ **Zero Backend**    | Fully static site — fast loading, no dependencies                           |
+| 🎥 **Media Preview**   | Live previews for videos, GIFs, and images                            |
+| 📋 **One-Click Copy**  | Instantly copy media URLs to clipboard                                |
+| 🎨 **Dark UI**         | Clean, eye-friendly interface with Tailwind CSS                       |
+| 🎨 **Lighk UI**        | Clean, eye-friendly interface with Tailwind CSS                       |
+| ⚡ **Zero Backend**    | Fully static site — fast loading, no dependencies                     |
 
 ---
 
@@ -33,20 +29,20 @@
 ```html
 <!-- Video Background -->
 <video autoplay muted loop class="fixed w-full h-full object-cover z-0">
-  <source src="https://11nawid.github.io/FreeBGs/media/videos/cosmic.mp4" type="video/mp4">
+  <source src="[[https://11nawid.github.io/FreeBGs/media/videos/example.mp4](https://11nawid.github.io/FreeBGs/media/digital-art-isolated-house.jpg)](https://11nawid.github.io/FreeBGs/media/coffee-shop.1920x1080.mp4)" type="video/mp4">
 </video>
 
 <!-- CSS Background -->
 <style>
   .hero-section {
-    background: url('https://11nawid.github.io/FreeBGs/media/images/abstract-wave.jpg') center/cover;
+    background: url('[https://11nawid.github.io/FreeBGs/media/images/abstract-wave.jpg](https://11nawid.github.io/FreeBGs/media/digital-art-isolated-house.jpg)') center/cover;
   }
 </style>
 ```
 
 ### For Designers:
 1. Visit [Live Preview](https://11nawid.github.io/FreeBGs/)
-2. Browse media using tabs
+2. Browse media
 3. Click "📋 Copy URL" on any asset
 4. Paste into Figma/Photoshop or download directly
 
@@ -55,14 +51,12 @@
 ## 📂 Project Structure
 ```bash
 FreeBGs/
-├── index.html            # Main page
-├── scripts/              # JavaScript functionality
-│   └── main.js           # Dynamic media loader + clipboard logic
+├── index.html            # Main page with all js logic for fetching and displaying from media/ directory.
 ├── media/                # All assets
+│   ├── index.html        # inside media for easy listing
 │   ├── videos/           # .mp4/.webm/.ogg
 │   ├── gifs/             # .gif
 │   └── images/           # .jpg/.png/.webp
-└── styles/               # Tailwind CSS
 ```
 
 
